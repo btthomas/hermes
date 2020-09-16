@@ -1,82 +1,39 @@
+require('dotenv').config();
+const fetch = require('node-fetch');
 const request = require('request-json');
-// const url = require('url');
-const puppeteer = require('puppeteer');
+const url = require('url');
 
 const STOCK_URL =
   'https://www.hermes.com/us/en/product/etriers-remix-scarf-90-H003502Sv09/';
-const ADD_TO_CART = '#add-to-cart-button-oos';
+const OUT_OF_STOCK = 'add-to-cart-button-oos';
+const IN_STOCK = 'add-to-cart-button-in-stock';
 
-const showBrowser = !!process.argv[2];
-const options = showBrowser
-  ? {
-      headless: false,
-      slowMo: 20,
-    }
-  : {
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    };
+const TILL_URL = url.parse(process.env.TILL_URL);
+const TILL_BASE = TILL_URL.protocol + '//' + TILL_URL.host;
+let TILL_PATH = TILL_URL.pathname;
+const TILL_PHONE = process.env.TILL_PHONE;
 
-// const TILL_URL = url.parse(process.env.TILL_URL);
-// const TILL_BASE = TILL_URL.protocol + '//' + TILL_URL.host;
-// let TILL_PATH = TILL_URL.pathname;
-// const TILL_PHONE = process.env.TILL_PHONE;
-
-// if (TILL_URL.query != null) {
-//   TILL_PATH += '?' + TILL_URL.query;
-// }
-
-const getTextContent = (el) => el.textContent;
-
-const getTextFromHandles = async (page, handles) => {
-  let text = [];
-  await asyncForEach(handles, async (handle, index) => {
-    if (index === 0) {
-      return;
-    }
-    text[index - 1] = await page.evaluate(getTextContent, handle);
-  });
-  return text;
-};
+if (TILL_URL.query != null) {
+  TILL_PATH += '?' + TILL_URL.query;
+}
 
 async function init() {
-  const browser = await puppeteer.launch(options);
-
   try {
-    let response;
-    const page = await browser.newPage();
     console.log('starting');
 
-    await page.goto(STOCK_URL, { waitUntil: 'networkidle2' });
-    response = await checkStock(page);
-    if (response.error) {
-      throw new Error(response.error);
-    }
+    // const body = await fetch(STOCK_URL).then((res) => res.text());
 
-    await browser.close();
+    // const outOfStock = body.indexOf(OUT_OF_STOCK) !== -1;
+
+    // const inStock = body.indexOf(IN_STOCK) !== -1;
+
+    // if (!outOfStock && inStock) {
+    inform();
+    // }
+
     console.log('complete');
   } catch (e) {
     console.error(e);
-  }
-}
-
-async function checkStock(page) {
-  try {
-    let response = {};
-
-    await page.waitForSelector(ADD_TO_CART);
-    const addToCart = await page.$(ADD_TO_CART);
-
-    // const inStock = notDisabled(addToCart);
-    const inStock = false;
-
-    if (inStock) {
-      console.log('inform');
-      // await inform();
-    }
-
-    return {};
-  } catch (error) {
-    return { error };
   }
 }
 
@@ -87,7 +44,7 @@ async function inform() {
     {
       phone: [TILL_PHONE],
       text:
-        'Kettle Bell in STOCK!\nhttps://www.kettlebellkings.com/competition-kettlebell/',
+        'Hermes in STOCK!\nhttps://www.hermes.com/us/en/product/etriers-remix-scarf-90-H003502Sv09/',
     },
     function (err, res) {
       return console.log(res.statusCode);
