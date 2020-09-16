@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 const fetch = require('node-fetch');
 const request = require('request-json');
 const url = require('url');
@@ -29,6 +29,8 @@ async function init() {
 
     if (!outOfStock && inStock) {
       inform();
+    } else {
+      console.log('Out of stock.');
     }
 
     console.log('complete');
