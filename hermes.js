@@ -1,4 +1,4 @@
-require('dotenv').config();
+// require('dotenv').config();
 const fetch = require('node-fetch');
 const request = require('request-json');
 const url = require('url');
@@ -21,15 +21,13 @@ async function init() {
   try {
     console.log('starting');
 
-    // const body = await fetch(STOCK_URL).then((res) => res.text());
+    const body = await fetch(STOCK_URL).then((res) => res.text());
+    const outOfStock = body.indexOf(OUT_OF_STOCK) !== -1;
+    const inStock = body.indexOf(IN_STOCK) !== -1;
 
-    // const outOfStock = body.indexOf(OUT_OF_STOCK) !== -1;
-
-    // const inStock = body.indexOf(IN_STOCK) !== -1;
-
-    // if (!outOfStock && inStock) {
-    inform();
-    // }
+    if (!outOfStock && inStock) {
+      inform();
+    }
 
     console.log('complete');
   } catch (e) {
@@ -38,7 +36,7 @@ async function init() {
 }
 
 async function inform() {
-  console.log('informing');
+  console.log('In Stock, informing');
   return request.createClient(TILL_BASE).post(
     TILL_PATH,
     {
