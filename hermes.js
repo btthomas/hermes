@@ -25,6 +25,8 @@ async function init() {
     const outOfStock = body.indexOf(OUT_OF_STOCK) !== -1;
     const inStock = body.indexOf(IN_STOCK) !== -1;
 
+    console.log({ outOfStock, inStock });
+
     if (!outOfStock && inStock) {
       inform();
     }
